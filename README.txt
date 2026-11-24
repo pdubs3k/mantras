@@ -1,61 +1,69 @@
-OUR WINS JOURNAL
-================
-A 6-month wins calendar + a mantra list that syncs live between you and a friend.
-Open it, see the calendar, tap a day. Mantras are one tap away. Everything else
-is behind the gear button.
+MANTRAS
+=======
+Calendar log, per-person streaks and a mantra list, synced live between phones.
 
-ONE-TIME SETUP (about 15 minutes, only one of you does steps 1 and 2)
+ALREADY UPLOADED THE OLD VERSION? UPDATE IT
+  1. Open your our-wins repository on github.com.
+  2. Click "Add file" > "Upload files". Drag in ALL the files from this
+     folder (the files, not the zip). Same names replace the old ones.
+     Then "Commit changes".
+  3. In Firebase: Realtime Database > Rules tab. Replace everything with the
+     new firebase-rules.json and tap Publish (streaks need the new rules;
+     skip this if you already did it for the streaks update).
+  4. Wait a minute, then fully close and reopen the app on each phone,
+     twice if needed. Your saved logs and sync carry over.
+  The old home screen icon may keep its old name and picture. To get the new
+  ones, delete the icon and add it to the home screen again. On iPhone, only
+  do that while sync is on and shows "Synced", because removing the icon
+  erases that phone's copy.
 
-1. Make the free sync database (Firebase, free plan, no card needed)
+FIRST-TIME SETUP
+
+1. Make the free sync database (Firebase, free plan)
    a. Go to console.firebase.google.com and sign in with a Google account.
-   b. Create a project. Any name, e.g. our-wins. You can turn Analytics off.
-   c. In the left menu, open Realtime Database (under Build) > Create Database.
-      Pick any location, choose "Start in locked mode", then Enable.
-   d. Open the Rules tab. Delete what's there, paste everything from
-      firebase-rules.json (in this folder), and tap Publish.
-   e. Open the Data tab and copy the address at the top. It looks like
-      https://our-wins-xxxxx-default-rtdb.firebaseio.com
+   b. Create a project (any name). You can turn Analytics off.
+   c. Left menu: Realtime Database (under Build) > Create Database.
+      Any location, "Start in locked mode", Enable.
+   d. Rules tab: replace everything with firebase-rules.json, Publish.
+   e. Data tab: copy the address at the top
+      (https://....firebaseio.com or https://....firebasedatabase.app).
 
-2. Put the journal online (free, GitHub Pages)
-   a. Sign in at github.com. Click "+" > New repository, name it our-wins,
-      make it Public, Create.
-   b. Click "uploading an existing file", drag in ALL the files from this
-      folder (the files, not the zip), then "Commit changes".
-   c. Settings > Pages > Branch: "main", folder "/ (root)" > Save.
-   d. After a minute your address shows at the top, like
-      https://YOUR-NAME.github.io/our-wins/
+2. Put it online (free, GitHub Pages)
+   a. github.com > "+" > New repository > Public > Create.
+   b. "uploading an existing file" > drag in ALL files > Commit changes.
+   c. Settings > Pages > Branch "main", "/ (root)" > Save.
+   d. Your address appears after a minute: https://YOUR-NAME.github.io/REPO/
 
-3. Install it on both phones
-   iPhone:  open the address in Safari > Share > "Add to Home Screen".
-   Android: open it in Chrome > menu > "Add to Home screen" / "Install app".
-   Always open it from the home screen icon after that.
+3. Install on each phone
+   iPhone:  Safari > Share > Add to Home Screen.
+   Android: Chrome > menu > Add to Home screen / Install app.
 
-4. Connect the two phones
-   You:     open the icon > gear > "Start a new shared journal" > paste the
-            database address from step 1e > Start > "Invite your friend"
-            and send the invite in a message.
-   Friend:  open their icon > gear > paste your whole invite message into
-            "Got an invite?" > Join.
-   Done. The top of the calendar says "Live with <name>" when it's working.
+4. Connect
+   You:    open it, add your name, gear > Start a new shared journal >
+           paste the address from 1e > Start > Send invite.
+   Friend: open it, add their name, gear > paste the whole invite under
+           Invite > Join.
 
-5. Daily reminder (each of you)
-   Gear > pick a time > "iPhone calendar" (tap "Add All") or
-   "Google Calendar" (check it repeats Daily, Save).
-   It's a repeating calendar alert, so it fires even with the app closed.
+5. Daily reminder (each phone): gear > pick a time > iPhone calendar
+   (tap Add All) or Google Calendar (check it repeats daily, Save).
+
+USING IT
+  - Each time it opens, tap your name. Tap the name button at the top to switch.
+  - Calendar: tap a day. Each person has one note per day, and that day's
+    streak results are listed under each name. You can write your own note and
+    log your own streaks there; everyone else's are shown read-only.
+    Your days are white, others' are dark gray.
+  - Streaks: "Add new streak", pick "Done / not done" or "Number" with a unit
+    (minutes, reps, pages...). Log today from the streak row. Tap the streak's
+    name for its full day-by-day log, where you can fill in or fix past days.
+    Everyone sees everyone's streaks and logs. You can only change your own.
 
 GOOD TO KNOW
-  - Privacy: there's no login. The invite contains a long random code
-    (32 characters), and the database rules only let someone in who has that
-    exact code. Anyone you send the invite to, or who sees it, can read and
-    add to the journal. Only send it to your friend, and don't post it.
-    The rules also stop anyone from wiping the journal in one go.
-  - Offline: it still opens and saves with no signal. Changes sync the next
-    time you're online.
-  - iPhone: Safari and the home screen icon keep separate copies on the phone.
-    Use the icon. (With sync on, both end up with the same journal anyway.)
-  - Backup: gear > "Backup and more" > "Save a backup". Restoring a backup on a
-    new phone brings back your wins as yours.
-  - Calendar start month: gear > "Backup and more", or DEFAULT_START near the
-    top of the script in index.html. Set to December 2026 (through May 2027).
-  - Changed a file later? Bump VERSION in sw.js so phones load the new copy.
-  - Free plan limits are far beyond what two people writing notes will use.
+  - Privacy: no login. The invite holds a 32-character random code, and the
+    database rules only let in someone with that exact code. Anyone with the
+    invite can read and add. Only send it to your friend.
+  - Names aren't passwords. Anyone using the app can pick any name.
+  - Works offline; changes sync when back online.
+  - Backup: gear > Backup and more > Save a backup.
+  - Calendar start month: gear > Backup and more (set to Dec 2026 to May 2027).
+  - After changing any file yourself, bump VERSION in sw.js.

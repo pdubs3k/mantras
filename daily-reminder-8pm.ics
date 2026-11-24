@@ -1,19 +1,18 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Our Wins Journal//EN
+PRODID:-//mantras//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VEVENT
-UID:ourwins-daily-default@ourwins.local
-DTSTAMP:20261124T010000Z
+UID:mantras-daily-default@mantras.local
+DTSTAMP:20261124T080000Z
 DTSTART:20261124T200000
 DTEND:20261124T201000
 RRULE:FREQ=DAILY
-SUMMARY:Our Wins: log today's win ✨
-DESCRIPTION:Open the Our Wins icon on your home screen. Log one win and read your mantras.
+SUMMARY:mantras
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Log today's win and read your mantras
+DESCRIPTION:mantras
 TRIGGER:PT0M
 END:VALARM
 END:VEVENT

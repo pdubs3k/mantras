@@ -26,6 +26,18 @@
             ".write": "$code.length >= 32 && newData.exists()",
             ".validate": "newData.isString() && newData.val().length <= 40"
           }
+        },
+        "streaks": {
+          "$id": {
+            ".write": "$code.length >= 32 && newData.exists()",
+            ".validate": "newData.child('owner').isString() && newData.child('name').isString() && newData.child('name').val().length <= 40 && (newData.child('kind').val() == 'check' || newData.child('kind').val() == 'number')"
+          }
+        },
+        "slog": {
+          "$id": {
+            ".write": "$code.length >= 32 && newData.exists()",
+            ".validate": "newData.child('s').isString() && newData.child('d').isString() && newData.child('v').isNumber()"
+          }
         }
       }
     }

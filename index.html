@@ -683,7 +683,7 @@ $("#addStreakBtn").addEventListener("click",()=>{
     const name=el("input",{type:"text",id:"stName",maxlength:"40",autocomplete:"off"});
     const kind=el("select",{id:"stKind"}, el("option",{value:"check",text:"Done / not done each day"}), el("option",{value:"number",text:"Number each day"}));
     const unit=el("input",{type:"text",id:"stUnit",maxlength:"16",autocomplete:"off"});
-    const unitField=el("div",{class:"field hidden"}, el("label",{for:"stUnit",text:"Unit"}), unit);
+    const unitField=el("div",{class:"field hidden"}, el("label",{for:"stUnit",text:"Unit(s)"}), unit);
     kind.addEventListener("change",()=>unitField.classList.toggle("hidden",kind.value!=="number"));
     body.append(
       el("div",{class:"field"}, el("label",{for:"stName",text:"Name"}), name),

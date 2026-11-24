@@ -130,6 +130,11 @@ textarea:focus,input:focus,select:focus{outline:2px solid var(--hi);outline-offs
 #picker.open{display:block}
 .pick{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px 16px;font-size:1.15rem;font-weight:650;margin:8px 0}
 .pick.current{background:var(--hi);color:var(--on-hi);border-color:var(--hi)}
+.pickrow{display:flex;gap:6px;align-items:center;margin:8px 0}
+.pickrow .pick{margin:0;flex:1}
+.rm{border:0;background:transparent;color:var(--muted);text-decoration:underline;padding:8px 6px;font-size:.9rem;flex:0 0 auto}
+.namerow{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+.namerow:first-child{border-top:0}
 /* Nav */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:space-around;
   padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:30}
@@ -232,6 +237,11 @@ details summary{cursor:pointer;font-weight:650;padding:4px 0}
         <label for="myName">Your name</label>
         <input type="text" id="myName" maxlength="24" autocomplete="off">
       </div>
+    </div>
+
+    <div class="card">
+      <h2>Names</h2>
+      <div id="nameList"></div>
     </div>
 
     <div class="card" id="syncCard">
@@ -432,8 +442,30 @@ function closePicker(){ $("#picker").classList.remove("open"); }
 function renderPicker(){
   const box=$("#pickList"); box.textContent="";
   for (const p of livePeople()){
-    box.append(el("button",{class:"pick"+(p.id===S.me?" current":""), "data-pid":p.id, text:p.name, onclick:()=>{ S.me=p.id; save(); closePicker(); renderAll(); }}));
+    box.append(el("div",{class:"pickrow"},
+      el("button",{class:"pick"+(p.id===S.me?" current":""), "data-pid":p.id, text:p.name, onclick:()=>{ S.me=p.id; save(); closePicker(); renderAll(); }}),
+      el("button",{class:"rm","data-rm":p.id,"aria-label":"Remove "+p.name,text:"Remove",onclick:()=>removePerson(p.id)})));
   }
+}
+function renderNameList(){
+  const box=$("#nameList"); if (!box) return; box.textContent="";
+  const ppl=livePeople();
+  if (!ppl.length){ box.append(el("p",{class:"sub",text:"No names yet."})); return; }
+  for (const p of ppl) box.append(el("div",{class:"namerow"},
+    el("span",{}, swatch(p.id), el("span",{text:p.name+(p.id===S.me?" (you)":"")})),
+    el("button",{class:"rm","data-rm":p.id,"aria-label":"Remove "+p.name,text:"Remove",onclick:()=>removePerson(p.id)})));
+}
+// Removing a name hides it and everything it added (notes, mantras, streaks) on every synced phone.
+function removePerson(pid){
+  const name=nameOf(pid);
+  if (!confirm("Remove "+name+" and everything they added (notes, mantras, streaks) from every phone?")) return;
+  const t=now(); S.del[pid]=t;
+  for (const list of Object.values(S.entries)) for (const e of list) if (e.by===pid && !S.del[e.id]) S.del[e.id]=t;
+  for (const m of S.mantras) if (m.by===pid && !S.del[m.id]) S.del[m.id]=t;
+  for (const [id,st] of Object.entries(S.streaks)) if (st.owner===pid && !S.del[id]) S.del[id]=t;
+  const wasMe = S.me===pid; if (wasMe) S.me="";
+  changed(); renderNameList(); toast(name+" removed");
+  if (wasMe) openPicker();
 }
 $("#addNameBtn").addEventListener("click",()=>{
   const n=$("#newName").value.trim().slice(0,24); if(!n){ return; }
@@ -913,6 +945,7 @@ function renderSyncCard(){
 /* ---------- settings ---------- */
 function renderSettings(){
   $("#myName").value=S.me?nameOf(S.me):""; $("#startMonth").value=S.start; $("#remTime").value=S.remTime||"20:00";
+  renderNameList();
   renderRemMantra();
   renderSyncCard();
 }
@@ -1007,13 +1040,16 @@ $("#wipeBtn").addEventListener("click",()=>{
 });
 
 /* ---------- boot ---------- */
-function renderAll(){ renderCalendar(); renderMantras(); renderSheet(); if (curView==="streaks") renderStreaks(); refreshG(); if ($("#picker").classList.contains("open")) renderPicker(); setStatus(); }
+// if this phone's name was removed (here or on another phone), ask for a name again
+function checkMe(){ if (S.me && S.del[S.me]){ S.me=""; save(); if (!$("#picker").classList.contains("open")) openPicker(); } }
+function renderAll(){ checkMe(); renderCalendar(); renderMantras(); renderSheet(); if (curView==="streaks") renderStreaks(); refreshG(); if ($("#picker").classList.contains("open")) renderPicker(); if (curView==="settings") renderNameList(); setStatus(); }
 // For updates arriving from the other phone: don't disturb a mantra being edited or a form being filled in.
 function softRender(){
-  renderCalendar(); if (!document.activeElement?.closest?.("#sheet")) renderSheet(); if (!editingMantra) renderMantras();
+  checkMe(); renderCalendar(); if (!document.activeElement?.closest?.("#sheet")) renderSheet(); if (!editingMantra) renderMantras();
   if (curView==="streaks" && !document.activeElement?.matches?.("#people input")) renderStreaks();
   if (gRender && !document.activeElement?.closest?.("#gSheet")) refreshG();
   if ($("#picker").classList.contains("open")) renderPicker();
+  if (curView==="settings") renderNameList();
 }
 renderAll();
 (function(){

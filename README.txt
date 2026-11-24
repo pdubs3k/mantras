@@ -71,6 +71,11 @@ USING IT
   - Daily reminder: in Settings you can pick a mantra under "Mantra in the
     reminder"; it becomes the reminder's notification text. After changing it,
     delete the old reminder event in your calendar and add it again.
+  - Removing a name: in Settings under Names, or on the name screen, tap Remove
+    next to it. That name and everything it added (notes, mantras, streaks)
+    disappear from every phone. Anyone with the journal can do this, so only
+    share the invite with people you trust. The same name can be added again
+    later, but it starts empty.
   - Days with a note from anyone show "..." (with the quote marks) under the date.
   - Mantras: tap Add at the bottom, write, tap Save. Line breaks you type are
     kept. Each one is signed with your name. Tap one of yours to edit or

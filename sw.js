@@ -1,6 +1,6 @@
 // Offline support: keeps a copy of the journal on the phone so it opens with no internet.
 // Bump VERSION after you change any file, so phones pick up the new copy.
-const VERSION = "mantras-v9";
+const VERSION = "mantras-v10";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-180.png", "icon-192.png", "icon-512.png", "font.woff2"];
 
 self.addEventListener("install", e => {

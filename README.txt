@@ -5,8 +5,9 @@ Calendar log, per-person streaks and a mantra list, synced live between phones.
 ALREADY UPLOADED THE OLD VERSION? UPDATE IT
   1. Open your our-wins repository on github.com.
   2. Click "Add file" > "Upload files". Drag in ALL the files from this
-     folder (the files, not the zip), including the new font.woff2 and
-     font-italic.woff2. Same names replace the old ones. Then "Commit changes".
+     folder (the files, not the zip), including font.woff2. Same names replace
+     the old ones. Then "Commit changes". If font-italic.woff2 is there from
+     an earlier update, it's no longer used and can be deleted or left.
   3. In Firebase: Realtime Database > Rules tab. Replace everything with the
      new firebase-rules.json and tap Publish (streaks need the new rules;
      skip this if you already did it for the streaks update).
@@ -58,9 +59,10 @@ USING IT
     name for its full day-by-day log, where you can fill in or fix past days.
     Everyone sees everyone's streaks and logs. You can only change your own.
   - Days with a note from anyone show "..." under the date.
-  - Mantras: write one in the box at the bottom and tap Add. Each one is signed
-    with your name. Tap one of yours to edit or delete it; others' are read-only.
-    The font is Cormorant Garamond (free, see FONT-LICENSE.txt) and works offline.
+  - Mantras: tap Add at the bottom, write, tap Save. Line breaks you type are
+    kept. Each one is signed with your name. Tap one of yours to edit or
+    delete it; others' are read-only. The font is Cormorant Garamond (free,
+    see FONT-LICENSE.txt) and works offline.
 
 GOOD TO KNOW
   - Privacy: no login. The invite holds a 32-character random code, and the

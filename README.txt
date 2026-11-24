@@ -13,6 +13,10 @@ ALREADY UPLOADED THE OLD VERSION? UPDATE IT
      skip this if you already did it for the streaks update).
   4. Wait a minute, then fully close and reopen the app on each phone,
      twice if needed. Your saved logs and sync carry over.
+  If the old version still shows: make sure the files on GitHub are the new
+  ones, wait a few minutes, then fully close the app and open it again. On a
+  computer, press Ctrl+Shift+R (Cmd+Shift+R on a Mac). From this version on,
+  updates load on their own the next time it's opened.
   The old home screen icon may keep its old name and picture. To get the new
   ones, delete the icon and add it to the home screen again. On iPhone, only
   do that while sync is on and shows "Synced", because removing the icon
@@ -61,7 +65,9 @@ USING IT
     name for its full day-by-day log, where you can fill in or fix past days.
     Everyone sees everyone's streaks and logs. You can only change your own.
   - Streaks list under each name with Current streak, Best streak and Days
-    since first log (plus a total for number streaks).
+    since first log. Number streaks also show "X today, Y/Z total, A average":
+    today's amount, everything logged so far over the number of days logged,
+    and the average per logged day.
   - Daily reminder: in Settings you can pick a mantra under "Mantra in the
     reminder"; it becomes the reminder's notification text. After changing it,
     delete the old reminder event in your calendar and add it again.

@@ -85,7 +85,8 @@ h3{font-size:1rem;margin:0}
 .check.done{background:var(--hi);color:var(--on-hi)}
 .check.todo{background:var(--surface-2);color:var(--text)}
 .numlog{display:flex;align-items:center;gap:6px}
-.numlog input{width:84px}
+.numlog input{width:70px;padding:7px 8px}
+.numsum{font-size:.85rem;margin-top:3px}
 .histrow{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid var(--line)}
 .histrow:last-child{border-bottom:0}
 .histrow button{border:0;background:none;padding:4px 6px;text-decoration:underline}
@@ -590,6 +591,12 @@ function strip(dates, pid){
 }
 function daysSince(dates){ if(!dates.length) return "–"; const first=[...dates].sort()[0], t=todayStr(); if (first>t) return "0";
   return String(Math.round((Date.parse(t+"T12:00:00")-Date.parse(first+"T12:00:00"))/86400000)); }
+function numLine(st, tv){ // "X today, Y/Z total, A average" for number streaks
+  const vals=Object.values(S.slog).filter(r=>r.s===st.id && +r.v>0).map(r=>+r.v);
+  const total=vals.reduce((a,v)=>a+v,0), days=vals.length, avg=days?Math.round(total/days*10)/10:0, u=st.unit?" "+st.unit:"";
+  const b=t=>el("b",{text:t});
+  return el("div",{class:"numsum"}, b(fmtNum(+tv||0)+u)," today, ",b(fmtNum(total)+u+"/"+days+" "+(days===1?"day":"days"))," total, ",b(fmtNum(avg)+u)," average");
+}
 function statLine(dates, extra){
   const item=(label,val)=>el("span",{},label+" ",el("b",{text:String(val)}));
   return el("div",{class:"nums"}, item("Current streak:",runs(d=>dates.includes(d))), item("Best streak:",bestRun(dates)),
@@ -615,17 +622,17 @@ function renderStreaks(){
         if (st.kind==="number"){
           const inp=el("input",{type:"number",inputmode:"decimal",min:"0",step:"any","aria-label":st.name+" today"}); if (tv) inp.value=fmtNum(tv);
           inp.addEventListener("change",()=>setLog(st.id,today,inp.value));
-          ctl=el("div",{class:"numlog"}, inp, el("span",{class:"sub",text:st.unit||""}));
+          ctl=el("div",{class:"numlog"}, inp, st.unit?el("span",{class:"sub",text:st.unit}):null);
         } else {
           ctl=el("button",{class:"btn small check "+(tv?"done":"todo"), text: tv?"Done today":"Mark today", onclick:()=>setLog(st.id,today,tv?0:1)});
         }
       } else {
-        ctl=el("span",{class:"sub",text: st.kind==="number" ? (tv?fmtNum(tv)+" "+(st.unit||""):"") : (tv?"Done today":"")});
+        ctl= st.kind==="number" ? null : el("span",{class:"sub",text: tv?"Done today":""});
       }
-      const total = st.kind==="number" ? Object.values(S.slog).filter(r=>r.s===st.id).reduce((a,r)=>a+(+r.v||0),0) : dates.length;
       card.append(el("div",{class:"streak","data-sid":st.id},
         el("div",{class:"head"}, el("button",{class:"title",text:st.name,onclick:()=>openStreak(st.id)}), ctl),
-        statLine(dates, st.kind==="number" ? fmtNum(total)+(st.unit?" "+st.unit:"") : null),
+        st.kind==="number" ? numLine(st, tv) : null,
+        statLine(dates),
         strip(dates,p.id)));
     }
     box.append(card);
@@ -1021,7 +1028,10 @@ let lastDay=todayStr();
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden && todayStr()!==lastDay){ lastDay=todayStr(); renderAll(); } });
 
 if ("serviceWorker" in navigator && /^https?:/.test(location.protocol)){
-  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>r.update()).catch(()=>{}));
+  // when a new version takes over, reload once so it shows straight away
+  const hadController = !!navigator.serviceWorker.controller; let reloaded=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{ if (hadController && !reloaded){ reloaded=true; location.reload(); } });
 }
 </script>
 </body>

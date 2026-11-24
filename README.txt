@@ -53,12 +53,19 @@ USING IT
   - Calendar: tap a day. Each person has one note per day, and that day's
     streak results are listed under each name. You can write your own note and
     log your own streaks there; everyone else's are shown read-only.
-    Your days are white, others' are dark gray.
+    Each name has its own color (white, black or light gray) on every phone;
+    a day shared by several people shows their colors split. The calendar
+    runs November 2026 through May 2027 (start month is in Settings).
   - Streaks: "Add new streak", pick "Done / not done" or "Number" with a unit
     (minutes, reps, pages...). Log today from the streak row. Tap the streak's
     name for its full day-by-day log, where you can fill in or fix past days.
     Everyone sees everyone's streaks and logs. You can only change your own.
-  - Days with a note from anyone show "..." under the date.
+  - Streaks list under each name with Current streak, Best streak and Days
+    since first log (plus a total for number streaks).
+  - Daily reminder: in Settings you can pick a mantra under "Mantra in the
+    reminder"; it becomes the reminder's notification text. After changing it,
+    delete the old reminder event in your calendar and add it again.
+  - Days with a note from anyone show "..." (with the quote marks) under the date.
   - Mantras: tap Add at the bottom, write, tap Save. Line breaks you type are
     kept. Each one is signed with your name. Tap one of yours to edit or
     delete it; others' are read-only. The font is Cormorant Garamond (free,

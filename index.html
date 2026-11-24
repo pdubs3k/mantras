@@ -63,19 +63,22 @@ h3{font-size:1rem;margin:0}
 .day.both{background:linear-gradient(135deg,var(--hi) 50%,var(--other) 50%);border-color:var(--hi);color:var(--on-hi);font-weight:700}
 .day.today{outline:2.5px solid var(--hi);outline-offset:2px}
 .day.future{opacity:.6}
-.day .dots{position:absolute;left:0;right:0;bottom:1px;text-align:center;font-size:.8rem;font-weight:800;letter-spacing:1px;line-height:1}
-.legend{display:inline-flex;gap:12px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;border:1px solid var(--line)}
+.day .dots{position:absolute;left:0;right:0;bottom:2px;text-align:center;font-size:.62rem;font-weight:800;letter-spacing:0;line-height:1}
+.day.multi{color:#fff;text-shadow:0 0 3px #000,0 0 2px #000}
+.swatch{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;border:1px solid var(--line);vertical-align:-1px}
+.legend{display:inline-flex;flex-wrap:wrap;gap:12px}
+.legend .swatch{margin-right:4px}
 /* Streaks */
 .person h2{display:flex;justify-content:space-between;align-items:baseline}
 .person h2 small{font-size:.8rem;font-weight:500;color:var(--muted)}
-.streak{padding:12px 0;border-top:1px solid var(--line)}
-.streak:first-of-type{border-top:0}
+.person h2{margin-bottom:4px}
+.streak{padding:9px 0 9px 12px;margin-left:4px;border-left:2px solid var(--line);border-top:0}
+.streak + .streak{margin-top:6px}
 .streak .head{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.streak .title{border:0;background:none;padding:0;text-align:left;font-weight:700;font-size:1.05rem;flex:1}
-.streak .nums{font-size:.82rem;color:var(--muted);margin-top:2px}
+.streak .title{border:0;background:none;padding:0;text-align:left;font-weight:700;font-size:.95rem;flex:1}
+.streak .nums{font-size:.8rem;color:var(--muted);margin-top:2px;display:flex;flex-wrap:wrap;column-gap:12px;row-gap:1px}
 .streak .nums b{color:var(--text)}
-.strip{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:8px}
+.strip{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:6px;max-width:340px}
 .strip span{aspect-ratio:1/1;border-radius:3px;background:var(--surface-2);border:1px solid var(--line)}
 .strip span.on{background:var(--hi);border-color:var(--hi)}
 .check{min-width:84px}
@@ -95,12 +98,10 @@ h3{font-size:1rem;margin:0}
 .mantra.own{cursor:pointer}
 .mfont,.mantra .t,.mantra .sig,.mtxt{font-family:"Mantra","Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;font-style:normal;font-weight:500}
 .mantra .t,.mtxt{display:block;padding:0 0 0 1.1em;font-size:1.4rem;line-height:1.5;white-space:pre-wrap;word-break:break-word;color:var(--text)}
-.mantra .sig{display:block;margin:.7em 0 0 55%;font-size:1.2rem;color:var(--muted)}
+.mantra .sig{display:block;margin:.7em -4% 0 0;text-align:right;font-size:1.2rem;color:var(--muted)}
 textarea.mtxt,textarea.mtxt:focus{width:100%;min-height:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;outline:none;resize:none;overflow:hidden;margin:0}
 .mbtns{display:flex;gap:6px;margin:.6em 0 0 1.1em;flex-wrap:wrap}
 .mbtns .btn{padding:7px 12px;font-size:.9rem}
-.memorize .mantra .t{filter:blur(7px);transition:filter .2s}
-.memorize .mantra.revealed .t{filter:none}
 .editor{display:flex;flex-direction:column;gap:8px;flex:1}
 .toggle{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--muted)}
 .toggle input{width:20px;height:20px;accent-color:#fff}
@@ -179,7 +180,7 @@ details summary{cursor:pointer;font-weight:650;padding:4px 0}
     <div class="line">
       <span><b id="statStreak">0</b> day streak</span>
       <span><b id="statDays">0</b> days logged</span>
-      <span class="legend"><span><i style="background:var(--hi)"></i><span id="meLabel">You</span></span><span><i style="background:var(--other)"></i><span id="friendLabel">Others</span></span></span>
+      <span class="legend" id="legend"></span>
     </div>
     <div class="row" style="margin-top:12px"><button class="btn block" id="logTodayBtn">Log today</button></div>
 
@@ -203,9 +204,7 @@ details summary{cursor:pointer;font-weight:650;padding:4px 0}
   <div class="wrap">
     <div class="top">
       <h1>Mantras</h1>
-      <label class="toggle"><input type="checkbox" id="memorizeToggle"> Memorize</label>
     </div>
-    <p class="hint hidden" id="memorizeHint">Tap a line to show it.</p>
 
     <ul class="mantra-list" id="mantraList"></ul>
 
@@ -268,6 +267,11 @@ details summary{cursor:pointer;font-weight:650;padding:4px 0}
         <label for="remTime">Time</label>
         <input type="time" id="remTime" value="20:00">
       </div>
+      <div class="field">
+        <label for="remMantra">Mantra in the reminder</label>
+        <select id="remMantra"></select>
+        <p class="hint">After changing it, delete the old reminder in your calendar and add it again.</p>
+      </div>
       <div class="row wrapx">
         <button class="btn" id="icsBtn">iPhone calendar</button>
         <button class="btn secondary" id="gcalBtn">Google Calendar</button>
@@ -325,9 +329,11 @@ details summary{cursor:pointer;font-weight:650;padding:4px 0}
 
 <script>
 "use strict";
-/* ===== The calendar shows 6 months starting here (YYYY-MM). Also changeable in Settings. ===== */
-const DEFAULT_START = "2026-12";
-const MONTHS_SHOWN = 6;
+/* ===== The calendar shows 7 months starting here (YYYY-MM). Also changeable in Settings. ===== */
+const DEFAULT_START = "2026-11";
+const MONTHS_SHOWN = 7;
+/* ===== Each name gets one of these colors: [fill, text] ===== */
+const PERSON_COLORS = [["#ffffff","#3a3a3e"],["#111113","#ffffff"],["#b4b4b9","#232326"]];
 const APP_ID = "our-wins-journal";      // keep: lets older backups still restore
 const KEY = "ourWinsJournal.v1";        // keep: keeps data saved by the earlier version
 const HOST_RE = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.(firebaseio\.com|firebasedatabase\.app)$/;
@@ -339,7 +345,7 @@ function uid(){ return Date.now().toString(36) + Math.random().toString(36).slic
 function randCode(n=32){ const a="abcdefghijklmnopqrstuvwxyz0123456789"; const b=new Uint8Array(n); crypto.getRandomValues(b); let s=""; for(const x of b) s+=a[x%36]; return s; }
 function now(){ return Date.now(); }
 function blank(){
-  return { me:"", start:DEFAULT_START, remTime:"20:00", sync:null,
+  return { me:"", start:DEFAULT_START, remTime:"20:00", remMantra:"", sync:null,
     people:{}, entries:{}, mantras:[], streaks:{}, slog:{}, del:{} };
 }
 let S;
@@ -351,6 +357,7 @@ function load(){
   // earlier version kept your own name separately
   if (S.name && S.me){ S.people[S.me] = S.name; }
   delete S.name; delete S.theme;
+  if (!S.calNov){ if (S.start==="2026-12") S.start="2026-11"; S.calNov=1; }
   for (const id of OLD_SEEDS){ const m=S.mantras.find(x=>x.id===id); if (m && !m.u && !S.del[id]) S.del[id]=now(); }
 }
 function save(){
@@ -440,6 +447,22 @@ const MONTH_NAMES = ["January","February","March","April","May","June","July","A
 let slogByDay={};
 function indexSlog(){ slogByDay={}; for (const r of Object.values(S.slog)){ if (+r.v>0 && !S.del[r.s] && S.streaks[r.s]) (slogByDay[r.d]||(slogByDay[r.d]=new Set())).add(S.streaks[r.s].owner); } }
 function dayActivity(ds){ const s=new Set(liveEntries(ds).map(e=>e.by)); for (const id of (slogByDay[ds]||[])) s.add(id); return s; }
+function colorOf(pid){
+  const ids=Object.keys(S.people||{}).filter(id=>S.people[id] && !S.del[id]).sort();
+  const i=ids.indexOf(pid); return PERSON_COLORS[(i<0?0:i)%PERSON_COLORS.length];
+}
+function swatch(pid){ const c=colorOf(pid); return el("i",{class:"swatch",style:"background:"+c[0]}); }
+function paintDay(btn, act){
+  const ids=[...act].sort((a,b)=>PERSON_COLORS.indexOf(colorOf(a))-PERSON_COLORS.indexOf(colorOf(b)));
+  if (!ids.length) return;
+  if (ids.length===1){ const c=colorOf(ids[0]); btn.style.background=c[0]; btn.style.borderColor=c[0]; btn.style.color=c[1]; return; }
+  const n=ids.length, stops=ids.map((id,k)=>colorOf(id)[0]+" "+(k*100/n).toFixed(2)+"% "+((k+1)*100/n).toFixed(2)+"%").join(",");
+  btn.style.background="linear-gradient(135deg,"+stops+")"; btn.style.borderColor="var(--line)"; btn.classList.add("multi");
+}
+function renderLegend(){
+  const box=$("#legend"); box.textContent="";
+  for (const p of livePeople()) box.append(el("span",{}, swatch(p.id), el("span",{text:p.name})));
+}
 function renderCalendar(){
   indexSlog();
   const {y,m} = parseYM(S.start);
@@ -460,7 +483,8 @@ function renderCalendar(){
       if (ds===today) cls+=" today";
       if (ds>today) cls+=" future";
       const btn = el("button",{class:cls, "data-date":ds, "aria-label": MONTH_NAMES[mm]+" "+dd+(es.length?", has notes":"")}, String(dd));
-      if (es.length) btn.append(el("span",{class:"dots","aria-hidden":"true",text:"..."}));
+      if (es.length) btn.append(el("span",{class:"dots","aria-hidden":"true",text:'"..."'}));
+      paintDay(btn, act);
 
       btn.addEventListener("click",()=>openDay(ds));
       grid.append(btn);
@@ -476,8 +500,7 @@ function renderStats(){
   const mine=personLogDates(S.me);
   $("#statStreak").textContent = runs(d=>mine.includes(d));
   $("#statDays").textContent = mine.length;
-  $("#meLabel").textContent = S.me ? nameOf(S.me) : "You";
-  $("#friendLabel").textContent = othersLabel();
+  renderLegend();
   $("#nameBtn").textContent = S.me ? nameOf(S.me) : "Name";
 }
 
@@ -511,7 +534,7 @@ function renderSheet(){
   for (const p of ppl){
     const mine=p.id===S.me, notes=notesOf(p.id,ds), sts=liveStreaks(p.id);
     if (!mine && !notes.length && !sts.some(st=>logVal(st.id,ds))) continue;
-    const sec=el("div",{class:"entry daynote","data-pid":p.id}, el("div",{class:"who",text:p.name}));
+    const sec=el("div",{class:"entry daynote","data-pid":p.id}, el("div",{class:"who"}, swatch(p.id), el("span",{text:p.name})));
     if (mine){
       const ta=el("textarea",{id:"entryText","aria-label":"Note"});
       ta.value = noteDraft!==null ? noteDraft : notes.map(e=>e.text).join("\n\n");
@@ -560,10 +583,17 @@ function setLog(sid, ds, v){
   S.slog[k]={s:sid, d:ds, v:+v||0, u:now()};
   changed();
 }
-function strip(dates){
-  const s=el("div",{class:"strip","aria-hidden":"true"}); const set=new Set(dates);
-  for (let i=13;i>=0;i--){ s.append(el("span",{class:set.has(addDays(todayStr(),-i))?"on":""})); }
+function strip(dates, pid){
+  const s=el("div",{class:"strip","aria-hidden":"true"}); const set=new Set(dates), c=colorOf(pid)[0];
+  for (let i=13;i>=0;i--){ const on=set.has(addDays(todayStr(),-i)); s.append(el("span",on?{class:"on",style:"background:"+c+";border-color:"+c}:{})); }
   return s;
+}
+function daysSince(dates){ if(!dates.length) return "–"; const first=[...dates].sort()[0], t=todayStr(); if (first>t) return "0";
+  return String(Math.round((Date.parse(t+"T12:00:00")-Date.parse(first+"T12:00:00"))/86400000)); }
+function statLine(dates, extra){
+  const item=(label,val)=>el("span",{},label+" ",el("b",{text:String(val)}));
+  return el("div",{class:"nums"}, item("Current streak:",runs(d=>dates.includes(d))), item("Best streak:",bestRun(dates)),
+    item("Days since first log:",daysSince(dates)), extra?item("Total:",extra):null);
 }
 function fmtNum(v){ return Number.isInteger(v)?String(v):String(Math.round(v*100)/100); }
 function renderStreaks(){
@@ -572,13 +602,12 @@ function renderStreaks(){
   if (!ppl.length){ box.append(el("p",{class:"sub",text:"No names yet."})); return; }
   for (const p of ppl){
     const mine=p.id===S.me;
-    const card=el("div",{class:"card person"}, el("h2",{}, el("span",{text:p.name}), mine?el("small",{text:"you"}):null));
+    const card=el("div",{class:"card person"}, el("h2",{}, el("span",{}, swatch(p.id), el("span",{class:"pname",text:p.name})), mine?el("small",{text:"you"}):null));
     // the journal log itself is a streak too
     const ld=personLogDates(p.id);
     card.append(el("div",{class:"streak"},
       el("div",{class:"head"}, el("button",{class:"title",text:"Calendar log",onclick:()=>openPersonLog(p.id)})),
-      el("div",{class:"nums"}, el("b",{text:String(runs(d=>ld.includes(d)))})," current · ",el("b",{text:String(bestRun(ld))})," best · ",el("b",{text:String(ld.length)})," days"),
-      strip(ld)));
+      statLine(ld), strip(ld,p.id)));
     for (const st of liveStreaks(p.id)){
       const dates=streakDates(st.id), today=todayStr(), tv=logVal(st.id,today);
       let ctl=null;
@@ -596,9 +625,8 @@ function renderStreaks(){
       const total = st.kind==="number" ? Object.values(S.slog).filter(r=>r.s===st.id).reduce((a,r)=>a+(+r.v||0),0) : dates.length;
       card.append(el("div",{class:"streak","data-sid":st.id},
         el("div",{class:"head"}, el("button",{class:"title",text:st.name,onclick:()=>openStreak(st.id)}), ctl),
-        el("div",{class:"nums"}, el("b",{text:String(runs(d=>dates.includes(d)))})," current · ",el("b",{text:String(bestRun(dates))})," best · ",
-          el("b",{text: st.kind==="number" ? fmtNum(total)+(st.unit?" "+st.unit:"") : String(total)}), st.kind==="number"?" total":" days"),
-        strip(dates)));
+        statLine(dates, st.kind==="number" ? fmtNum(total)+(st.unit?" "+st.unit:"") : null),
+        strip(dates,p.id)));
     }
     box.append(card);
   }
@@ -684,7 +712,6 @@ function renderMantras(){
     } else {
       const li=el("li",{class:"mantra"+(own?" own":""),"data-mid":m.id}, el("span",{class:"t",text:m.text}), sig);
       li.addEventListener("click",()=>{
-        if (document.body.classList.contains("memorize")){ li.classList.toggle("revealed"); return; }
         if (own){ editingMantra=m.id; renderMantras(); }
       });
       ul.append(li);
@@ -706,11 +733,6 @@ $("#saveNewMantraBtn").addEventListener("click",()=>{
   const ms=liveMantras(); const order = ms.length ? ms[ms.length-1].order+1 : 0;
   S.mantras.push({id:uid(), text:v, by:S.me, order, u:now()});
   closeNewMantra(); changed();
-});
-$("#memorizeToggle").addEventListener("change",e=>{
-  document.body.classList.toggle("memorize",e.target.checked);
-  $("#memorizeHint").classList.toggle("hidden",!e.target.checked);
-  document.querySelectorAll(".mantra.revealed").forEach(x=>x.classList.remove("revealed"));
 });
 
 /* ---------- merge (used by live sync and backups) ---------- */
@@ -884,6 +906,7 @@ function renderSyncCard(){
 /* ---------- settings ---------- */
 function renderSettings(){
   $("#myName").value=S.me?nameOf(S.me):""; $("#startMonth").value=S.start; $("#remTime").value=S.remTime||"20:00";
+  renderRemMantra();
   renderSyncCard();
 }
 $("#myName").addEventListener("change",e=>{
@@ -893,6 +916,18 @@ $("#myName").addEventListener("change",e=>{
 });
 $("#startMonth").addEventListener("change",e=>{ if(/^\d{4}-\d{2}$/.test(e.target.value)){ S.start=e.target.value; save(); renderCalendar(); } });
 $("#remTime").addEventListener("change",e=>{ S.remTime=e.target.value||"20:00"; save(); });
+function renderRemMantra(){
+  const sel=$("#remMantra"); sel.textContent="";
+  sel.append(el("option",{value:"",text:"None"}));
+  for (const m of liveMantras()){ const one=m.text.replace(/\s+/g," ").trim();
+    sel.append(el("option",{value:m.id,text:(one.length>48?one.slice(0,47)+"…":one)+(m.by?" — "+nameOf(m.by):"")})); }
+  sel.value = reminderMantra() ? S.remMantra : "";
+}
+$("#remMantra").addEventListener("change",e=>{ S.remMantra=e.target.value; save(); });
+function reminderMantra(){ return S.remMantra ? liveMantras().find(m=>m.id===S.remMantra)||null : null; }
+function reminderTitle(){ const m=reminderMantra(); return m ? m.text.replace(/\s+/g," ").trim() : "mantras"; }
+function reminderDetails(url){ const m=reminderMantra(), web=/^https?:/.test(url);
+  return [m ? m.text+(m.by?"\n— "+nameOf(m.by):"") : "", web?url:""].filter(Boolean).join("\n\n"); }
 
 /* ---------- daily reminder ---------- */
 function appUrl(){ return location.href.split("#")[0].split("?")[0]; }
@@ -902,6 +937,11 @@ function firstReminder(){
   return d;
 }
 const stamp = d => d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";
+function icsFold(line){ // keep each line within 75 bytes, as calendar apps expect
+  let out="", cur="", n=0;
+  for (const ch of line){ const cp=ch.codePointAt(0), b=cp<0x80?1:cp<0x800?2:cp<0x10000?3:4; if (n+b>73){ out+=cur+"\r\n "; cur=""; n=1; } cur+=ch; n+=b; }
+  return out+cur;
+}
 function icsText(){
   const d=firstReminder(), end=new Date(d.getTime()+10*60000);
   const utc = new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
@@ -910,9 +950,9 @@ function icsText(){
   return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//mantras//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH",
     "BEGIN:VEVENT","UID:mantras-daily-"+(S.me||"x")+"@mantras.local","DTSTAMP:"+utc,
     "DTSTART:"+stamp(d),"DTEND:"+stamp(end),"RRULE:FREQ=DAILY",
-    "SUMMARY:mantras","DESCRIPTION:"+esc(isWeb?url:"mantras"), isWeb?"URL:"+url:null,
-    "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:mantras","TRIGGER:PT0M","END:VALARM",
-    "END:VEVENT","END:VCALENDAR"].filter(Boolean).join("\r\n")+"\r\n";
+    "SUMMARY:"+esc(reminderTitle()),"DESCRIPTION:"+esc(reminderDetails(url)||"mantras"), isWeb?"URL:"+url:null,
+    "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+esc(reminderTitle()),"TRIGGER:PT0M","END:VALARM",
+    "END:VEVENT","END:VCALENDAR"].filter(Boolean).map(icsFold).join("\r\n")+"\r\n";
 }
 function download(name, text, type){
   const blob=new Blob([text],{type});
@@ -922,7 +962,7 @@ function download(name, text, type){
 $("#icsBtn").addEventListener("click",()=>{ download("mantras-daily-reminder.ics", icsText(), "text/calendar"); });
 $("#gcalBtn").addEventListener("click",()=>{
   const d=firstReminder(), end=new Date(d.getTime()+10*60000), url=appUrl();
-  const p=new URLSearchParams({action:"TEMPLATE", text:"mantras", details:/^https?:/.test(url)?url:"",
+  const p=new URLSearchParams({action:"TEMPLATE", text:reminderTitle(), details:reminderDetails(url),
     dates:stamp(d)+"/"+stamp(end), recur:"RRULE:FREQ=DAILY"});
   window.open("https://calendar.google.com/calendar/render?"+p.toString(),"_blank");
 });

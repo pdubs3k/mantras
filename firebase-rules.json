@@ -1,0 +1,33 @@
+{
+  "rules": {
+    "journals": {
+      "$code": {
+        ".read": "$code.length >= 32",
+        "entries": {
+          "$id": {
+            ".write": "$code.length >= 32 && newData.exists()",
+            ".validate": "newData.child('d').isString() && newData.child('text').isString() && newData.child('text').val().length <= 5000"
+          }
+        },
+        "mantras": {
+          "$id": {
+            ".write": "$code.length >= 32 && newData.exists()",
+            ".validate": "newData.child('text').isString() && newData.child('text').val().length <= 1000"
+          }
+        },
+        "del": {
+          "$id": {
+            ".write": "$code.length >= 32 && newData.exists()",
+            ".validate": "newData.isNumber()"
+          }
+        },
+        "people": {
+          "$id": {
+            ".write": "$code.length >= 32 && newData.exists()",
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          }
+        }
+      }
+    }
+  }
+}

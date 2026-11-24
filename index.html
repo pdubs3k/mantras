@@ -130,8 +130,6 @@ textarea:focus,input:focus,select:focus{outline:2px solid var(--hi);outline-offs
 #picker.open{display:block}
 .pick{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px 16px;font-size:1.15rem;font-weight:650;margin:8px 0}
 .pick.current{background:var(--hi);color:var(--on-hi);border-color:var(--hi)}
-.pickrow{display:flex;gap:6px;align-items:center;margin:8px 0}
-.pickrow .pick{margin:0;flex:1}
 .rm{border:0;background:transparent;color:var(--muted);text-decoration:underline;padding:8px 6px;font-size:.9rem;flex:0 0 auto}
 .namerow{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
 .namerow:first-child{border-top:0}
@@ -240,7 +238,7 @@ details summary{cursor:pointer;font-weight:650;padding:4px 0}
     </div>
 
     <div class="card">
-      <h2>Names</h2>
+      <div class="top"><h2>Names</h2><button class="btn ghost" id="editNamesBtn">Edit names</button></div>
       <div id="nameList"></div>
     </div>
 
@@ -442,23 +440,26 @@ function closePicker(){ $("#picker").classList.remove("open"); }
 function renderPicker(){
   const box=$("#pickList"); box.textContent="";
   for (const p of livePeople()){
-    box.append(el("div",{class:"pickrow"},
-      el("button",{class:"pick"+(p.id===S.me?" current":""), "data-pid":p.id, text:p.name, onclick:()=>{ S.me=p.id; save(); closePicker(); renderAll(); }}),
-      el("button",{class:"rm","data-rm":p.id,"aria-label":"Remove "+p.name,text:"Remove",onclick:()=>removePerson(p.id)})));
+    box.append(el("button",{class:"pick"+(p.id===S.me?" current":""), "data-pid":p.id, text:p.name, onclick:()=>{ S.me=p.id; save(); closePicker(); renderAll(); }}));
   }
 }
+let editingNames=false;
+$("#editNamesBtn").addEventListener("click",()=>{ editingNames=!editingNames; renderNameList(); });
 function renderNameList(){
   const box=$("#nameList"); if (!box) return; box.textContent="";
+  $("#editNamesBtn").textContent = editingNames ? "Done" : "Edit names";
   const ppl=livePeople();
   if (!ppl.length){ box.append(el("p",{class:"sub",text:"No names yet."})); return; }
   for (const p of ppl) box.append(el("div",{class:"namerow"},
     el("span",{}, swatch(p.id), el("span",{text:p.name+(p.id===S.me?" (you)":"")})),
-    el("button",{class:"rm","data-rm":p.id,"aria-label":"Remove "+p.name,text:"Remove",onclick:()=>removePerson(p.id)})));
+    editingNames ? el("button",{class:"rm","data-rm":p.id,"aria-label":"Remove "+p.name,text:"Remove",onclick:()=>removePerson(p.id)}) : null));
 }
 // Removing a name hides it and everything it added (notes, mantras, streaks) on every synced phone.
 function removePerson(pid){
   const name=nameOf(pid);
-  if (!confirm("Remove "+name+" and everything they added (notes, mantras, streaks) from every phone?")) return;
+  const notes=Object.keys(S.entries).reduce((a,d)=>a+liveEntries(d).filter(e=>e.by===pid).length,0);
+  const ms=liveMantras().filter(m=>m.by===pid).length, sts=liveStreaks(pid).length;
+  if (!confirm("Remove "+name+" from every phone? This also removes their "+notes+" "+(notes===1?"note":"notes")+", "+ms+" "+(ms===1?"mantra":"mantras")+" and "+sts+" "+(sts===1?"streak":"streaks")+".")) return;
   const t=now(); S.del[pid]=t;
   for (const list of Object.values(S.entries)) for (const e of list) if (e.by===pid && !S.del[e.id]) S.del[e.id]=t;
   for (const m of S.mantras) if (m.by===pid && !S.del[m.id]) S.del[m.id]=t;
@@ -945,7 +946,7 @@ function renderSyncCard(){
 /* ---------- settings ---------- */
 function renderSettings(){
   $("#myName").value=S.me?nameOf(S.me):""; $("#startMonth").value=S.start; $("#remTime").value=S.remTime||"20:00";
-  renderNameList();
+  editingNames=false; renderNameList();
   renderRemMantra();
   renderSyncCard();
 }
